@@ -28,12 +28,21 @@ export class VisitorController {
 
     async createVisitor(req, res) {
         try {
+            // Check if the authenticated user is a host
+            // if (req.user.role !== 'host') {
+            //     return res.status(403).json({
+            //         status: 'error',
+            //         message: 'Only hosts can create visitors'
+            //     });
+            // }
+
             const visitorData = {
                 name: req.body.name,
                 phone_number: req.body.phone_number,
                 email: req.body.email,
                 purpose_of_visit: req.body.purpose_of_visit,
-                host_id: req.body.host_id
+                host_id: req.user.user_id, // Get host_id from authenticated user
+                status: 'pending'
             };
 
             const visitor = await visitorService.createVisitor(visitorData);

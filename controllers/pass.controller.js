@@ -3,7 +3,7 @@ import { generateQRCode } from '../utils/qr.helper.js';
 
 export const createPass = async (req, res) => {
     try {
-        const { visitor_id, expiry_time } = req.body;
+        const { visitor_id, expiry_time } = req.body;  //TO:DO :: khudse lenai hai
 
         if (!visitor_id || !expiry_time) {
             return res.status(400).json({ error: 'Missing required fields' });
