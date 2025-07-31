@@ -30,7 +30,8 @@ model Visitor {
   email         String
   purpose_of_visit String
   host_id       Int
-  status        String   // 'pending', 'approved', 'rejected', 'expired'
+  status        String   // 'pending', 'approved', 'rejected', 'exited'
+  exit_time     DateTime?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
   

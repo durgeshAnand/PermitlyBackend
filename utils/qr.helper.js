@@ -1,22 +1,30 @@
 import crypto from 'crypto';
 
 export const generateQRCode = async (visitorData) => {
-    // Generate a unique QR code data using visitor details and timestamp
-    const timestamp = Date.now();
     const {
         visitor_id,
         name,
         phone_number,
-        purpose_of_visit
+        purpose_of_visit,
+        host,
+        status
     } = visitorData;
 
-    // Create a data string with all visitor information
+    // Create a data string with only essential visitor and host information
     const data = JSON.stringify({
-        visitor_id,
-        name,
-        phone_number,
-        purpose_of_visit,
-        timestamp
+        visitor: {
+            id: visitor_id,
+            name,
+            phone_number,
+            purpose_of_visit,
+            status
+        },
+        host: {
+            name: host.name,
+            phone_number: host.phone_number
+        },
+        issuedAt: new Date().toISOString(),
+        expiry: new Date(timestamp + 24 * 60 * 60 * 1000) // 24 hours from now
     });
 
     // Generate a hash of the data for security

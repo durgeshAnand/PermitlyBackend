@@ -3,6 +3,80 @@ import { VisitorService } from '../services/visitor.service.js';
 const visitorService = new VisitorService();
 
 export class VisitorController {
+    async markVisitorExit(req, res) {
+        try {
+            const { visitor_id } = req.params;
+            
+            // Ensure the user is a guard
+            if (req.user.role !== 'guard') {
+                return res.status(403).json({
+                    status: 'error',
+                    message: 'Only guards can mark visitor exits'
+                });
+            }
+
+            const visitor = await visitorService.markVisitorExit(visitor_id);
+
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    visitor
+                }
+            });
+        } catch (error) {
+            res.status(400).json({
+                status: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async getActiveVisitors(req, res) {
+        try {
+            // Ensure the user is a guard
+            if (req.user.role !== 'guard') {
+                return res.status(403).json({
+                    status: 'error',
+                    message: 'Only guards can view active visitors'
+                });
+            }
+
+            const activeVisitors = await visitorService.getActiveVisitors();
+
+            res.status(200).json({
+                status: 'success',
+                results: activeVisitors.length,
+                data: {
+                    visitors: activeVisitors
+                }
+            });
+        } catch (error) {
+            res.status(400).json({
+                status: 'error',
+                message: error.message
+            });
+        }
+    }
+
+    async generateQRCode(req, res) {
+        try {
+            const { visitor_id } = req.params;
+            const qrCode = await visitorService.generateVisitorQRCode(visitor_id);
+
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    qrCode
+                }
+            });
+        } catch (error) {
+            res.status(400).json({
+                status: 'error',
+                message: error.message
+            });
+        }
+    }
+
     async getAllVisitors(req, res) {
         try {
             const visitors = await visitorService.getAllVisitors(

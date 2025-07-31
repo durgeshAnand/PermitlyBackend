@@ -1,9 +1,99 @@
 import { PrismaClient } from '@prisma/client';
 import { validateEmail, validatePhoneNumber } from '../utils/validators.js';
+import { generateQRCode } from '../utils/qr.helper.js';
 
 const prisma = new PrismaClient();
 
 export class VisitorService {
+    async markVisitorExit(visitorId) {
+        const visitor = await prisma.visitor.findUnique({
+            where: { visitor_id: parseInt(visitorId) }
+        });
+
+        if (!visitor) {
+            throw new Error('Visitor not found');
+        }
+
+        if (visitor.status !== 'approved') {
+            throw new Error('Only approved visitors can be marked as exited');
+        }
+
+        if (visitor.exit_time) {
+            throw new Error('Visitor has already exited');
+        }
+
+        return await prisma.visitor.update({
+            where: { visitor_id: parseInt(visitorId) },
+            data: {
+                status: 'exited',
+                exit_time: new Date()
+            },
+            include: {
+                host: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone_number: true
+                    }
+                }
+            }
+        });
+    }
+
+    async getActiveVisitors() {
+        return await prisma.visitor.findMany({
+            where: {
+                status: 'approved',
+                exit_time: null
+            },
+            orderBy: {
+                created_at: 'desc'
+            },
+            include: {
+                host: {
+                    select: {
+                        name: true,
+                        email: true,
+                        phone_number: true
+                    }
+                }
+            }
+        });
+    }
+    async generateVisitorQRCode(visitorId) {
+        // Fetch only required visitor details
+        const visitor = await prisma.visitor.findUnique({
+            where: { visitor_id: parseInt(visitorId) },
+            select: {
+                visitor_id: true,
+                name: true,
+                phone_number: true,
+                purpose_of_visit: true,
+                status: true,
+                host: {
+                    select: {
+                        name: true,
+                        phone_number: true
+                    }
+                }
+            }
+        });
+
+        if (!visitor) {
+            throw new Error('Visitor not found');
+        }
+
+        // Generate QR code data with essential information only
+        const qrCode = await generateQRCode(visitor);
+        
+        // Store QR code reference
+        await prisma.visitor.update({
+            where: { visitor_id: parseInt(visitorId) },
+            data: { qr_code: qrCode }
+        });
+
+        return qrCode;
+    }
     async getAllVisitors(queryParams, userId, userRole) {
         const { status, date_range, host_id } = queryParams;
         
