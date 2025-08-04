@@ -52,30 +52,11 @@ enum VisitorStatus {
    created_at        DateTime      @default(now())
    updated_at        DateTime      @updatedAt
 
-<<<<<<< HEAD
-model Visitor {
-  visitor_id    Int      @id @default(autoincrement())
-  name          String
-  phone_number  String
-  email         String
-  purpose_of_visit String
-  host_id       Int
-  status        String   // 'pending', 'approved', 'rejected', 'exited'
-  exit_time     DateTime?
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
-  
-  host          User     @relation("HostVisitors", fields: [host_id], references: [user_id])
-  passes        Pass[]   @relation("VisitorPasses") // Visitor -> Passes
-  
-}
-=======
    host            User     @relation("HostVisitors",        fields: [host_id],           references: [user_id])
    created_by_guard User?   @relation("GuardCreatedVisitors", fields: [created_by_guard_id], references: [user_id])
    passes          Pass[]   @relation("VisitorPasses")
    notifications   Notification[] @relation("VisitorNotifications")
  }
->>>>>>> origin/main
 
  model Pass {
    pass_id         Int       @id @default(autoincrement())

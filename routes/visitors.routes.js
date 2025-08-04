@@ -10,25 +10,8 @@ const visitorController = new VisitorController();
  * All routes below this middleware require authentication
  */
 router.use(protect);
-<<<<<<< HEAD
-
-/**
- * Guard-specific Routes
- * These routes are only accessible by users with the 'guard' role
- * Used for managing visitor entry/exit and monitoring active visitors
- */
-router.get('/active', restrictTo('guard'), visitorController.getActiveVisitors);         // Get list of all currently active visitors
-router.post('/:visitor_id/exit', restrictTo('guard'), visitorController.markVisitorExit); // Mark visitor as exited, records exit time
-
-/**
- * Host and Admin Authorization
- * All routes below this middleware require 'host' or 'admin' role
- */
-router.use('/:id', restrictTo('admin', 'host'));
-=======
 // Only hosts and admins can manage visitors
 router.use('/:visitorId', restrictTo('admin', 'host'));
->>>>>>> origin/main
 
 /**
  * Visitor Management Routes
@@ -37,58 +20,6 @@ router.use('/:visitorId', restrictTo('admin', 'host'));
 // Create new visitor request - Used by hosts to register new visitors
 router.post('/', visitorController.createVisitor);
 
-<<<<<<< HEAD
-// Get all visitors with filters - Used by hosts to view their visitors, admins to view all
-router.get('/', visitorController.getAllVisitors);
-
-// Get detailed information about a specific visitor
-router.get('/:visitorId', (req, res) => {
-    // TODO: Get visitor details
-    // Returns: Visitor's complete profile including:
-    // - Personal information
-    // - Host details
-    // - Associated passes
-    // - Visit history
-});
-
-/**
- * Visitor Status Management
- * Used by hosts/admin to manage visitor approval workflow
- */
-router.put('/:visitorId/status', (req, res) => {
-    // TODO: Update visitor status
-    // Status options: 'pending', 'approved', 'rejected'
-    // Automatically:
-    // - Updates timestamp
-    // - Triggers notifications
-    // - Appears in guard interface if approved
-});
-
-/**
- * Host-specific Visitor Management
- * Used for viewing and managing visitors for a specific host
- */
-router.get('/host/:hostId', (req, res) => {
-    // TODO: Get host's visitors
-    // Features:
-    // - Filter by status (pending/approved/rejected/exited)
-    // - Filter by date range
-    // - Includes pass information
-    // - Sort by creation/update time
-});
-
-/**
- * Administrative Actions
- * Used for removing visitor records from the system
- */
-router.delete('/:visitorId', (req, res) => {
-    // TODO: Remove visitor record
-    // Actions performed:
-    // - Cancels any active passes
-    // - Sends notifications to relevant parties
-    // - Removes associated records
-});
-=======
 //only visitor information
 //in user showall false
 // admin has to button one to show all visitors and one for his own showall false.
@@ -110,6 +41,5 @@ router.get('/host/:host_id', visitorController.getVisitorsByHostId); // Simple r
 
 // deletes visitor and pass
 router.delete('/:visitorId', visitorController.deleteVisitor); // both admin and host can delete a visitor and notify to host and visitor also use transaction handling for data consistency.
->>>>>>> origin/main
 
 export default router;
